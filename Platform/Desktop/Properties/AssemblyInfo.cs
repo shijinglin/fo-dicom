@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Dicom.Core")]
-[assembly: AssemblyDescription("Platform specific assembly for fo-dicom")]
+[assembly: AssemblyDescription("Platform specific assembly for fo-dicom framework 4.5")]
 [assembly: AssemblyConfiguration("")]
 
 [assembly: InternalsVisibleTo("DICOM [Unit Tests], PublicKey=" +

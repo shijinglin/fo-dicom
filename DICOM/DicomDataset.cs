@@ -23,6 +23,11 @@ namespace Dicom
 
         private DicomTransferSyntax _syntax;
 
+        /// <summary>
+        /// 默认字符集，默认为： DicomEncoding.Default;
+        /// </summary>
+        public Encoding DefaultEncoding { get; set; } = DicomEncoding.Default;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -32,15 +37,25 @@ namespace Dicom
         /// set to Explicit VR Little Endian (DICOM default transfer syntax).
         /// </summary>
         public DicomDataset() : this(DicomTransferSyntax.ExplicitVRLittleEndian)
-        {
-        }
+        { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DicomDataset"/> class.
+        /// 指定字符集
         /// </summary>
-        /// <param name="internalTransferSyntax">Internal transfer syntax representation of the dataset.</param>
-        public DicomDataset(DicomTransferSyntax internalTransferSyntax)
+        /// <param name="encoding"></param>
+        public DicomDataset(Encoding encoding) : this(DicomTransferSyntax.ExplicitVRLittleEndian, encoding)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomDataset"/> class with <see cref="InternalTransferSyntax"/>
+        /// set to Explicit VR Little Endian (DICOM default transfer syntax).
+        /// </summary>
+        public DicomDataset(DicomTransferSyntax internalTransferSyntax, Encoding encoding = null)
         {
+            if (encoding != null)
+            {
+                DefaultEncoding = encoding;
+            }
             _items = new SortedDictionary<DicomTag, DicomItem>();
             InternalTransferSyntax = internalTransferSyntax;
         }
@@ -148,7 +163,7 @@ namespace Dicom
         /// <typeparam name="T">Type of the return value. Must inherit from <see cref="DicomItem"/>.</typeparam>
         /// <param name="tag">Requested DICOM tag.</param>
         /// <returns>Item corresponding to <paramref name="tag"/> or <code>null</code> if the <paramref name="tag"/> is not contained in the instance.</returns>
-        public T GetDicomItem<T>(DicomTag tag) where T:DicomItem
+        public T GetDicomItem<T>(DicomTag tag) where T : DicomItem
         {
             tag = ValidatePrivate(tag);
             if (_items.TryGetValue(tag, out DicomItem dummyItem))
@@ -277,7 +292,7 @@ namespace Dicom
             }
         }
 
- 
+
         /// <summary>        
         /// Returns the number of values in the specified <paramref name="tag"/>.
         /// </summary>
@@ -313,8 +328,12 @@ namespace Dicom
         /// <returns>Element value corresponding to <paramref name="tag"/>.</returns>
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/> or if the specified
         /// <paramref name="index">item index</paramref> is out-of-range.</exception>
-        public T GetValue<T>(DicomTag tag, int index)
+        public T GetValue<T>(DicomTag tag, int index, Encoding encoding = null)
         {
+            if (encoding == null)
+            {
+                encoding = DefaultEncoding;
+            }
             tag = ValidatePrivate(tag);
             if (index < 0) { throw new ArgumentOutOfRangeException(nameof(index), "index must be a non-negative value"); }
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
@@ -323,9 +342,19 @@ namespace Dicom
 
             if (item is DicomElement element)
             {
-                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) { return (T)(object)element.Buffer; }
+                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo()))
+                {
+                    if (typeof(T) == typeof(string))
+                    {
+                        return (T)(object)(encoding.GetString(IO.ByteConverter.ToArray<byte>(element.Buffer)));
+                    }
+                    else
+                    {
+                        return (T)(object)element.Buffer;
+                    }
+                }
 
-                if (index >= element.Count )
+                if (index >= element.Count)
                 {
                     throw new DicomDataException($"Index out of range: index {index} for Tag {tag} must be less than value count {element.Count}");
                 }
@@ -418,7 +447,10 @@ namespace Dicom
 
             if (item is DicomElement element)
             {
-                if (typeof(T[]) == typeof(byte[])) { return (T[])(object)element.Buffer.Data; }
+                if (typeof(T[]) == typeof(byte[]))
+                {
+                    return (T[])(object)element.Buffer.Data;
+                }
 
                 return element.Get<T[]>(-1);
             }
@@ -438,7 +470,8 @@ namespace Dicom
         /// <returns>Returns <code>true</code> if the element values could be exctracted, otherwise <code>false</code>.</returns>
         public bool TryGetValues<T>(DicomTag tag, out T[] values)
         {
-            if (typeof(T).GetTypeInfo().IsArray) {
+            if (typeof(T).GetTypeInfo().IsArray)
+            {
                 values = null;
                 return false;
             }
@@ -482,8 +515,12 @@ namespace Dicom
         /// <param name="tag">Requested DICOM tag.</param>
         /// <returns>Element values corresponding to <paramref name="tag"/>.</returns>
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>, is empty or is multi-valued.</exception>
-        public T GetSingleValue<T>(DicomTag tag)
+        public T GetSingleValue<T>(DicomTag tag, Encoding encoding = null)
         {
+            if (encoding == null)
+            {
+                encoding = DefaultEncoding;
+            }
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
 
             tag = ValidatePrivate(tag);
@@ -491,7 +528,17 @@ namespace Dicom
 
             if (item is DicomElement element)
             {
-                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) { return (T)(object)element.Buffer; }
+                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo()))
+                {
+                    if (typeof(T) == typeof(string))
+                    {
+                        return (T)(object)(encoding.GetString(IO.ByteConverter.ToArray<byte>(element.Buffer)));
+                    }
+                    else
+                    {
+                        return (T)(object)element.Buffer;
+                    }
+                }
 
                 if (element.Count != 1) { throw new DicomDataException("DICOM element must contains a single value"); }
 
@@ -549,7 +596,6 @@ namespace Dicom
                 return false;
             }
         }
-
 
         /// <summary>
         /// Gets the element value of the specified <paramref name="tag"/>, whose value multiplicity has to be 1, or the provided <paramref name="defaultValue"/> if the element value does not exist.
@@ -674,7 +720,7 @@ namespace Dicom
         /// <exception cref="DicomValidationException">A exception is thrown if one of the items does not pass the valiation</exception>
         public void Validate()
         {
-            foreach(var item in this)
+            foreach (var item in this)
             {
                 item.Validate();
             }
@@ -819,7 +865,7 @@ namespace Dicom
         /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
         public DicomDataset Add<T>(DicomTag tag, params T[] values)
         {
-            return DoAdd(tag, DicomEncoding.Default, values, false);
+            return DoAdd(tag, DefaultEncoding, values, false);
         }
 
         /// <summary>
@@ -850,7 +896,7 @@ namespace Dicom
         /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
         public DicomDataset Add<T>(DicomVR vr, DicomTag tag, params T[] values)
         {
-            return DoAdd(vr, tag, DicomEncoding.Default, values, false);
+            return DoAdd(vr, tag, DefaultEncoding, values, false);
         }
 
         /// <summary>
@@ -900,7 +946,7 @@ namespace Dicom
         /// <returns>The dataset instance.</returns>
         public DicomDataset AddOrUpdate<T>(DicomTag tag, params T[] values)
         {
-            return DoAdd(tag, DicomEncoding.Default, values, true);
+            return DoAdd(tag, DefaultEncoding, values, true);
         }
 
         /// <summary>
@@ -929,7 +975,7 @@ namespace Dicom
         /// <returns>The dataset instance.</returns>
         public DicomDataset AddOrUpdate<T>(DicomVR vr, DicomTag tag, params T[] values)
         {
-            return DoAdd(vr, tag, DicomEncoding.Default, values, true);
+            return DoAdd(vr, tag, DefaultEncoding, values, true);
         }
 
         /// <summary>
