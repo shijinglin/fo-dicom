@@ -1,4 +1,4 @@
-Fork By https://github.com/fo-dicom/fo-dicom , 相关介绍请看原始连接。
+Fork From https://github.com/fo-dicom/fo-dicom , 相关介绍请看原始连接。
 
 ---
 
