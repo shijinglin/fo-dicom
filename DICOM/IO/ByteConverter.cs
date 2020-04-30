@@ -17,7 +17,7 @@ namespace Dicom.IO
     {
         public static IByteBuffer ToByteBuffer(string value, Encoding encoding = null)
         {
-            if (encoding == null) encoding = Encoding.UTF8;
+            if (encoding == null) encoding = DicomEncoding.Default;
 
             byte[] bytes = encoding.GetBytes(value);
 
@@ -26,7 +26,7 @@ namespace Dicom.IO
 
         public static IByteBuffer ToByteBuffer(string value, Encoding encoding, byte padding)
         {
-            if (encoding == null) encoding = Encoding.UTF8;
+            if (encoding == null) encoding = DicomEncoding.Default;
 
             byte[] bytes = encoding.GetBytes(value);
 

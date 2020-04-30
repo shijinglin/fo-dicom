@@ -135,6 +135,9 @@ namespace Dicom
 
 
         internal bool _validateItems = true;
+
+        private bool _buildDefaultEncoding;
+
         internal bool ValidateItems
         {
             get => _validateItems && DicomValidation.PerformValidation;
@@ -330,6 +333,7 @@ namespace Dicom
         /// <paramref name="index">item index</paramref> is out-of-range.</exception>
         public T GetValue<T>(DicomTag tag, int index, Encoding encoding = null)
         {
+            this.BuildDefaultEncoding();
             if (encoding == null)
             {
                 encoding = DefaultEncoding;
@@ -517,6 +521,7 @@ namespace Dicom
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>, is empty or is multi-valued.</exception>
         public T GetSingleValue<T>(DicomTag tag, Encoding encoding = null)
         {
+            this.BuildDefaultEncoding();
             if (encoding == null)
             {
                 encoding = DefaultEncoding;
@@ -547,6 +552,24 @@ namespace Dicom
             else
             {
                 throw new DicomDataException("DicomTag doesn't support values.");
+            }
+        }
+
+        public void BuildDefaultEncoding()
+        {
+            if (!_buildDefaultEncoding)
+            {
+                if (_items != null && _items.ContainsKey(DicomTag.SpecificCharacterSet))
+                {
+                    //从数据恢复默认字符集
+                    DefaultEncoding = DicomEncoding.GetEncoding(((DicomStringElement)_items[DicomTag.SpecificCharacterSet]).StringValue);
+                }
+                else
+                {
+                    //补充默认字符集
+                    this.Add(DicomTag.SpecificCharacterSet, DicomEncoding.GetCharset(DefaultEncoding));
+                }
+                _buildDefaultEncoding = true;
             }
         }
 

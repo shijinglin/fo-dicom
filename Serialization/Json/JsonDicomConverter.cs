@@ -21,7 +21,7 @@ namespace Dicom.Serialization
     public class JsonDicomConverter : JsonConverter
     {
         private readonly bool _writeTagsAsKeywords;
-        private readonly static Encoding _jsonTextEncoding = Encoding.UTF8;
+        private readonly static Encoding _jsonTextEncoding = DicomEncoding.Default;
 
         /// <summary>
         /// Initialize the JsonDicomConverter.

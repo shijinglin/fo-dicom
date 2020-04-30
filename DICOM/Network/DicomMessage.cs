@@ -45,7 +45,7 @@ namespace Dicom.Network
         public DicomCommandField Type
         {
             get => Command.GetSingleValue<DicomCommandField>(DicomTag.CommandField);
-            protected set => Command.AddOrUpdate(DicomTag.CommandField, (ushort) value);
+            protected set => Command.AddOrUpdate(DicomTag.CommandField, (ushort)value);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets a value indicating whether the message contains a dataset.
         /// </summary>
-        public bool HasDataset => Command.GetSingleValueOrDefault(DicomTag.CommandDataSetType, (ushort) 0x0101) != 0x0101;
+        public bool HasDataset => Command.GetSingleValueOrDefault(DicomTag.CommandDataSetType, (ushort)0x0101) != 0x0101;
 
         /// <summary>
         /// Gets or sets the presentation Context.
@@ -120,7 +120,7 @@ namespace Dicom.Network
             set
             {
                 _dataset = value;
-                Command.AddOrUpdate(DicomTag.CommandDataSetType, _dataset != null ? (ushort) 0x0202 : (ushort) 0x0101);
+                Command.AddOrUpdate(DicomTag.CommandDataSetType, _dataset != null ? (ushort)0x0202 : (ushort)0x0101);
             }
         }
 
@@ -157,7 +157,7 @@ namespace Dicom.Network
             if (LastPDUSent != null)
                 return LastPDUSent.Value.Add(timeout) < DateTime.Now;
 
-            if(PendingSince != null)
+            if (PendingSince != null)
                 return PendingSince.Value.Add(timeout) < DateTime.Now;
 
             return false;
@@ -270,7 +270,7 @@ namespace Dicom.Network
         /// <returns>True if message is a request, false otherwise.</returns>
         public static bool IsRequest(DicomCommandField type)
         {
-            return ((int) type & 0x8000) == 0;
+            return ((int)type & 0x8000) == 0;
         }
     }
 }

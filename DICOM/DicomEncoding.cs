@@ -27,7 +27,7 @@ namespace Dicom
         {
             if (string.IsNullOrEmpty(charset?.Trim())) return Default;
 
-            switch (charset.Trim())
+            switch (charset.Trim().ToUpper())
             {
                 case "ISO IR 13":
                 case "ISO_IR 13":
@@ -113,7 +113,7 @@ namespace Dicom
             if (encoding == null) return "ISO 2022 IR 6";
 
             // Do we always want the extended charsets?
-            switch (encoding.WebName)
+            switch (encoding.WebName.ToLower())
             {
                 //case 874:   return "ISO_IR 166";		// TIS 620-2533 (Thai) Unextended
                 case "windows-874":
@@ -155,7 +155,7 @@ namespace Dicom
                 //case 50222: return "ISO 2022 IR 87";	// JIS X 0208 (Kanji) Extended
                 case "iso-2022-jp":
                     return "ISO 2022 IR 159"; // JIS X 0212 (Kanji) Extended
-                case "GB18030":
+                case "gb18030":
                     return "GB18030"; // Chinese (Simplified) Extended
                 case "utf-8":
                     return "ISO_IR 192"; // Unicode in UTF-8

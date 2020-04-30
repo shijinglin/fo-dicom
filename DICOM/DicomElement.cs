@@ -104,7 +104,7 @@ namespace Dicom
         /// <value>Number of value items</value>
         public override int Count => 1;
 
-        protected string StringValue
+        public string StringValue
         {
             get
             {
