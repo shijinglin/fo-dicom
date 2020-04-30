@@ -13,7 +13,7 @@ Fork From https://github.com/fo-dicom/fo-dicom , 相关介绍请看原始连接�
 
 #### 2. 在DicomDataset中增加了BuildDefaultEncoding方法
 * 创建完所有标签之后主动调用一下， 如果标签列表中没有包含SpecificCharacterSet，则用默认字符集进行补充，明确指定过就可以不用调用了。
-* 首次获取数据的时候会自动调用BuildDefaultEncoding，如果优先从所有标签中寻找SpecificCharacterSet来恢复默认字符集，然后再转换取值。
+* 首次获取数据的时候会自动调用BuildDefaultEncoding，优先从所有标签中寻找SpecificCharacterSet来恢复默认字符集，然后再转换取值。
 
    *没有太过深入的去合理化维护字符集，外挂式的写了个方法按需调用，减少程序使用时的额外处理，仁者见仁，不喜勿喷！*
    
