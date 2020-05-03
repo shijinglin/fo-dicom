@@ -350,7 +350,8 @@ namespace Dicom
                 {
                     if (typeof(T) == typeof(string))
                     {
-                        return (T)(object)(encoding.GetString(IO.ByteConverter.ToArray<byte>(element.Buffer)));
+                        byte[] data = IO.ByteConverter.ToArray<byte>(element.Buffer);
+                        return (T)(object)encoding.GetString(data, 0, data.Length);
                     }
                     else
                     {
@@ -537,7 +538,8 @@ namespace Dicom
                 {
                     if (typeof(T) == typeof(string))
                     {
-                        return (T)(object)(encoding.GetString(IO.ByteConverter.ToArray<byte>(element.Buffer)));
+                        byte[] data = IO.ByteConverter.ToArray<byte>(element.Buffer);
+                        return (T)(object)encoding.GetString(data, 0, data.Length);
                     }
                     else
                     {

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29926.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DICOM.NetCore", "Platform\NetCore\DICOM.NetCore.csproj", "{F128E3DC-0F89-474F-AFAB-F95B00BE008B}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DICOM.Shared", "DICOM\DICOM.Shared.shproj", "{F9539369-1AD0-43B0-A35C-B82F6755C247}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DICOM\DICOM.Shared.projitems*{f128e3dc-0f89-474f-afab-f95b00be008b}*SharedItemsImports = 5
+		DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F128E3DC-0F89-474F-AFAB-F95B00BE008B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F128E3DC-0F89-474F-AFAB-F95B00BE008B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F128E3DC-0F89-474F-AFAB-F95B00BE008B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F128E3DC-0F89-474F-AFAB-F95B00BE008B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7FCB7B73-6D83-4E24-965D-F378E11A78A9}
+	EndGlobalSection
+EndGlobal
