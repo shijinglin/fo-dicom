@@ -125,7 +125,7 @@ namespace Dicom.Imaging.Render
                         pixelData.Height,
                         PixelDataConverter.ReverseBits(pixelData.GetFrame(frame)));
                 else
-                // Need sample images to verify that this is correct
+                    // Need sample images to verify that this is correct
                     return new SingleBitPixelData(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
             }
             else if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2
@@ -576,39 +576,55 @@ namespace Dicom.Imaging.Render
         public void Render(ILUT lut, int[] output)
         {
             var data = Data;
+            /*
+            
             if (lut == null)
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
+                //此处PLinq的用法有线程安全问题， 暂时弃用。 Lock无效 
                 Parallel.For(0, Height, y =>
-#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        lock (output)
+                        {
+                            output[i] = data[i];
+                        }
+                    }
+                });
+            }
+            else
+            {
+                Parallel.For(0, Height, y =>
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        lock (output)
+                        {
+                            output[i] = lut[data[i]];
+                        }
+                    }
+                });
+            } 
+             */
+            if (lut == null)
+            {
+                for (var y = 0; y < Height; ++y)
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = data[i];
                     }
                 }
-#if !NET35
-                );
-#endif
             }
             else
             {
-#if NET35
                 for (var y = 0; y < Height; ++y)
-#else
-                Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = lut[data[i]];
                     }
                 }
-#if !NET35
-                );
-#endif
             }
         }
 
@@ -674,8 +690,8 @@ namespace Dicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
-                        // Remove masked high and low bits by shifting them out of the data type. 
-                        var d = (ushort)(ushortData[i] << shiftLeft);
+                            // Remove masked high and low bits by shifting them out of the data type. 
+                            var d = (ushort)(ushortData[i] << shiftLeft);
                         ushortData[i] = (ushort)(d >> shiftRight);
                     }
                 }
@@ -861,9 +877,9 @@ namespace Dicom.Imaging.Render
             {
                 for (int i = Width * y, e = i + Width; i < e; i++)
                 {
-                    // Remove masked high and low bits by shifting them out of the data type,
-                    // getting the sign correct using arithmetic (sign-extending) right shift.
-                    var d = intData[i] << shiftLeft;
+                        // Remove masked high and low bits by shifting them out of the data type,
+                        // getting the sign correct using arithmetic (sign-extending) right shift.
+                        var d = intData[i] << shiftLeft;
                     intData[i] = d >> shiftRight;
                 }
             }
@@ -1044,8 +1060,8 @@ namespace Dicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
-                        // Remove masked high and low bits by shifting them out of the data type. 
-                        var d = uintData[i] << shiftLeft;
+                            // Remove masked high and low bits by shifting them out of the data type. 
+                            var d = uintData[i] << shiftLeft;
                         uintData[i] = d >> shiftRight;
                     }
                 }
