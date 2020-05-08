@@ -100,7 +100,7 @@ namespace Dicom
                 case "ASCII":
                     return Encoding.GetEncoding("us-ascii"); // ASCII
                 case "UTF-8":
-                    return Encoding.GetEncoding("utf-8"); // 其他直接支持的字符集
+                    return Encoding.GetEncoding("utf-8"); // UTF-8
                 default: // unknown encoding... return ASCII instead of throwing exception
                     //throw new ArgumentException("No codepage found for requested DICOM charset.", "charset");
                     return Default;
