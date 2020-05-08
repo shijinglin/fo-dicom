@@ -97,6 +97,10 @@ namespace Dicom
                     return Encoding.GetEncoding("windows-874"); // TIS 620-2533 (Thai) Extended
                 case "GB18030":
                     return Encoding.GetEncoding("GB18030"); // Chinese (Simplified) Extended
+                case "ASCII":
+                    return Encoding.GetEncoding("us-ascii"); // ASCII
+                case "UTF-8":
+                    return Encoding.GetEncoding("utf-8"); // 其他直接支持的字符集
                 default: // unknown encoding... return ASCII instead of throwing exception
                     //throw new ArgumentException("No codepage found for requested DICOM charset.", "charset");
                     return Default;
